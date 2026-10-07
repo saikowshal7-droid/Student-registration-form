@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Registration System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: lightblue;
+        }
+
+        .box {
+            width: 800px;
+            max-width: 100%;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px gray;
+        }
+
+        h1 {
+            text-align: center;
+            color: navy;
+        }
+
+        .info {
+            text-align: center;
+            color: black;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+            color: black;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid gray;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            border: 2px solid blue;
+            outline: none;
+        }
+
+        .register {
+            width: 100%;
+            margin-top: 20px;
+            padding: 11px;
+            border: none;
+            border-radius: 5px;
+            background: blue;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .register:hover {
+            background: darkblue;
+        }
+
+        #message {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .list {
+            margin-top: 30px;
+        }
+
+        .list h2 {
+            color: navy;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid gray;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: blue;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: lightgray;
+        }
+
+        .delete {
+            background: red;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete:hover {
+            background: darkred;
+        }
+
+        @media screen and (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .box {
+                padding: 18px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th,
+            td {
+                padding: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+
+        <h1>Student Registration System</h1>
+
+        <p class="info">
+            Student Registration Mini Project
+        </p>
+
+        <form id="studentForm">
+
+            <label>Student Name</label>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter student name"
+                required
+            >
+
+            <label>Email</label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter email address"
+                required
+            >
+
+            <label>Course</label>
+
+            <select id="course" required>
+                <option value="">Select Course</option>
+                <option value="C Language">C Language</option>
+                <option value="C++">C++</option>
+                <option value="Java">Java</option>
+                <option value="Python">Python</option>
+                <option value="HTML & CSS">HTML & CSS</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Web Development">Web Development</option>
+            </select>
+
+            <button class="register" type="submit">
+                Register Student
+            </button>
+
+        </form>
+
+        <p id="message"></p>
+
+        <div class="list">
+
+            <h2>Registered Students</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentList"></tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+    <script>
+        var form = document.getElementById("studentForm");
+
+        var studentList = document.getElementById("studentList");
+
+        var message = document.getElementById("message");
+
+        var students =
+            JSON.parse(
+                localStorage.getItem("studentData")
+            ) || [];
+
+        showStudents();
+
+        form.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            var name =
+                document.getElementById("name").value;
+
+            var email =
+                document.getElementById("email").value;
+
+            var course =
+                document.getElementById("course").value;
+
+            var student = {
+                id: new Date().getTime(),
+                name: name,
+                email: email,
+                course: course
+            };
+
+            students.push(student);
+
+            localStorage.setItem(
+                "studentData",
+                JSON.stringify(students)
+            );
+
+            message.innerHTML =
+                "Student registered successfully";
+
+            message.style.color = "green";
+
+            form.reset();
+
+            showStudents();
+        });
+
+        function showStudents() {
+
+            studentList.innerHTML = "";
+
+            if (students.length == 0) {
+
+                studentList.innerHTML =
+                    "<tr>" +
+                    "<td colspan='5' style='text-align:center;'>" +
+                    "No students registered yet" +
+                    "</td>" +
+                    "</tr>";
+
+                return;
+            }
+
+            for (var i = 0; i < students.length; i++) {
+
+                var student = students[i];
+
+                var row =
+                    document.createElement("tr");
+
+                row.innerHTML =
+                    "<td>" +
+                    (i + 1) +
+                    "</td>" +
+
+                    "<td>" +
+                    student.name +
+                    "</td>" +
+
+                    "<td>" +
+                    student.email +
+                    "</td>" +
+
+                    "<td>" +
+                    student.course +
+                    "</td>" +
+
+                    "<td>" +
+                    "<button " +
+                    "class='delete' " +
+                    "onclick='removeStudent(" +
+                    student.id +
+                    ")'>" +
+                    "Delete" +
+                    "</button>" +
+                    "</td>";
+
+                studentList.appendChild(row);
+            }
+        }
+
+        function removeStudent(id) {
+
+            var newList = [];
+
+            for (var i = 0; i < students.length; i++) {
+
+                if (students[i].id != id) {
+                    newList.push(students[i]);
+                }
+            }
+
+            students = newList;
+
+            localStorage.setItem(
+                "studentData",
+                JSON.stringify(students)
+            );
+
+            message.innerHTML =
+                "Student deleted successfully";
+
+            message.style.color = "red";
+
+            showStudents();
+        }
+    </script>
+
+</body>
+
+</html>
